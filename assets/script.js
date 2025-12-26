@@ -31,7 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
 const cartProducts = JSON.parse(localStorage.getItem("cart")) || {}
 const AddToCart = (id) => {
     cartProducts[id] = true
-    console.log(cartProducts)
     localStorage.setItem("cart", JSON.stringify(cartProducts))
     displayProducts(products)
     updataCounters()
@@ -42,7 +41,7 @@ const RemoveFromCart = (id) => {
     localStorage.setItem("cart", JSON.stringify(cartProducts))
     displayProducts(products)
     counter.textContent = Object.keys(cartProducts).length;
-    console.log(cartProducts)
+    updataCounters()
 }
 
 const favourite = (id) => {
@@ -73,19 +72,11 @@ const RemoveFromWish = (id) => {
 }
 
 const spinner = document.querySelector(".loader")
-const displayProducts = () => {
-    spinner.style.display = "block";
-    fetch('https://dummyjson.com/products/search?q=phone&limit=8')
-        .then(res => res.json())
-        .then(data => {
-            products = data.products;
-            // spinner
-            spinner.style.display = "none";
+const displayProducts = (products) => {
+    ProductsContainer.innerHTML = " "
 
-            ProductsContainer.innerHTML = " "
-
-            products.forEach(product => {
-                ProductsContainer.innerHTML += `
+    products.forEach(product => {
+        ProductsContainer.innerHTML += `
                     <div class="card">
                         <img class="card-img-top p-2 rounded-4 h-75" src="${product.thumbnail}">
                         <div class="card-body">
@@ -108,10 +99,10 @@ const displayProducts = () => {
                             <button class="btn btn-primary pt-3 pb-3" onclick="AddToCart(${product.id})">
                             <img src="${icons.cart}" alt="Cart Icon" class="">
                         </button> `
-                    }
+            }
 
                         ${wishlist[product.id] ?
-                        `<button class="bg-light border border-primary ">
+                `<button class="bg-light border border-primary ">
                             <img class="heart-two w-75" onClick="RemoveFromWish(${product.id})" src="${icons.wish}" alt="Cart Icon">
                         </button>
                         `: `         
@@ -122,11 +113,23 @@ const displayProducts = () => {
                         </div>
                 </div>
                 `
-            });
+    });
+}
+displayProducts(products)
+
+const ApiProuduct = () => {
+    spinner.style.display = "block";
+    fetch('https://dummyjson.com/products/search?q=phone&limit=8')
+        .then(res => res.json())
+        .then(data => {
+            products = data.products;
+            displayProducts(products)
+            // spinner
+            spinner.style.display = "none";
         })
 }
-displayProducts()
 
+ApiProuduct()
 
 
 const searchBtn = document.querySelector(".search-btn")
@@ -145,7 +148,7 @@ searchBtn.addEventListener("click", function () {
     }
 
     const filteredNamePtoducts = products.filter((product) => {
-        return product.h2.toLowerCase().includes(input);
+        return product.brand.toLowerCase().includes(input);
     });
 
     if (filteredNamePtoducts.length === 0) {
@@ -181,7 +184,7 @@ priceBtn.addEventListener("click", function () {
     }
     const filteredPrice = products.filter((product) => {
         // replace ?
-        const price = Number(product.price_after_sale.replace("$", ""))
+        const price = Number(product.price)
         return price >= min && price <= max
     })
     if (filteredPrice.length === 0) {
@@ -214,5 +217,3 @@ setInterval(() => {
     secounde.textContent = secounds
     console.log(`${hours}:${minutes}:${secounds}`)
 }, 1000);
-
-// spinner
