@@ -125,6 +125,9 @@ section {
     }
 }
 
+
+
+/* spinner */
 .loader {
     --color: #a5a5b0;
     --size: 400px;
@@ -180,6 +183,8 @@ section {
 }
 
 
+
+/* media query */
 @media screen and (max-width: 1024px) {
     section {
 

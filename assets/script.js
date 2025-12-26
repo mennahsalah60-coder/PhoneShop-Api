@@ -71,10 +71,8 @@ const RemoveFromWish = (id) => {
     updataCounters()
 }
 
-const spinner = document.querySelector(".loader")
 const displayProducts = (products) => {
     ProductsContainer.innerHTML = " "
-
     products.forEach(product => {
         ProductsContainer.innerHTML += `
                     <div class="card">
@@ -119,8 +117,11 @@ const displayProducts = (products) => {
 }
 displayProducts(products)
 
+
+const spinner = document.querySelector(".loader")
+
 const ApiProuduct = () => {
-    spinner.style.display = "block";
+    spinner.style.display = "flex";  // block*
     fetch('https://dummyjson.com/products/search?q=phone&limit=8')
         .then(res => res.json())
         .then(data => {
@@ -131,7 +132,11 @@ const ApiProuduct = () => {
         })
 }
 
-ApiProuduct()
+document.addEventListener("DOMContentLoaded", () => {
+    ApiProuduct();
+})
+
+// ApiProuduct()
 
 
 const searchBtn = document.querySelector(".search-btn")
