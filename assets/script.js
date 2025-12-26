@@ -78,7 +78,9 @@ const displayProducts = (products) => {
     products.forEach(product => {
         ProductsContainer.innerHTML += `
                     <div class="card">
-                        <img class="card-img-top p-2 rounded-4 h-75" src="${product.thumbnail}">
+                        <div class="h-100">
+                            <img class="card-img-top p-2 rounded-4 h-75" src="${product.thumbnail}">
+                        </div>
                         <div class="card-body">
                             <h2 class="card-title">${product.brand}</h2>
                             <h3 class="card-text fs-6">${product.description}</h3>
