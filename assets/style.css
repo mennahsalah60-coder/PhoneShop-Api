@@ -16,6 +16,7 @@ section {
 
             img {
                 width: 10%;
+
             }
 
             .counter {
@@ -101,6 +102,7 @@ section {
         button {
             border-radius: 0px 0px 0px 10px;
         }
+
     }
 
     .button {
@@ -123,8 +125,15 @@ section {
             }
         }
     }
-}
 
+    .products {
+
+        .wish img {
+            height: 35px;
+        }
+
+    }
+}
 
 
 /* spinner */

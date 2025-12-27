@@ -1,4 +1,5 @@
 let products = [];
+
 const icons = {
     fav: "./assets/images/Favorite (1).svg",
     wish: "./assets/images/colored-favourite.svg",
@@ -28,26 +29,39 @@ document.addEventListener("DOMContentLoaded", () => {
     updataCounters();
 });
 
+
 const cartProducts = JSON.parse(localStorage.getItem("cart")) || {}
-const AddToCart = (id) => {
+const AddToCart = (btn, id) => {
     cartProducts[id] = true
     localStorage.setItem("cart", JSON.stringify(cartProducts))
-    displayProducts(products)
+    btn.classList.remove("btn-primary")
+    btn.classList.add("btn-danger")
+    btn.textContent = "Remove From Cart"
+    btn.onclick = () => RemoveFromCart(btn, id);
+    // displayProducts(products)
     updataCounters()
 }
 
-const RemoveFromCart = (id) => {
+const RemoveFromCart = (btn, id) => {
     delete cartProducts[id]
     localStorage.setItem("cart", JSON.stringify(cartProducts))
-    displayProducts(products)
+    btn.classList.add("btn-primary");
+    btn.classList.remove("btn-danger");
+    // btn.textContent = "Add to Cart";
+    btn.innerHTML = `
+        <img src="${icons.cart}" class="me-2">`
+    btn.onclick = () => AddToCart(btn, id);
     counter.textContent = Object.keys(cartProducts).length;
     updataCounters()
 }
 
-const favourite = (id) => {
+const favourite = (btn, id) => {
     wishlist[id] = true
     localStorage.setItem("wishs", JSON.stringify(wishlist))
-    displayProducts(products)
+    btn.innerHTML = `
+        <img src="${icons.wish}">`
+    btn.onclick = () => RemoveFromWish(btn, id);
+    // displayProducts(products)
     updataCounters()
 
 }
@@ -60,14 +74,16 @@ btnWishs.addEventListener("click", function () {
         `;
         return;
     }
-
     displayProducts(filteredWishlist);
 });
 
-const RemoveFromWish = (id) => {
+const RemoveFromWish = (btn, id) => {
     delete wishlist[id]
     localStorage.setItem("wishs", JSON.stringify(wishlist))
-    displayProducts(products)
+    btn.innerHTML =
+        `<img src="${icons.fav}">`
+    btn.onclick = () => favourite(btn, id);
+    // displayProducts(products)
     updataCounters()
 }
 
@@ -75,45 +91,32 @@ const displayProducts = (products) => {
     ProductsContainer.innerHTML = " "
     products.forEach(product => {
         ProductsContainer.innerHTML += `
-                    <div class="card">
-                        <div class="h-100">
-                            <img class="card-img-top p-2 rounded-4 h-75" src="${product.thumbnail}">
-                        </div>
-                        <div class="card-body">
-                            <h2 class="card-title">${product.brand}</h2>
-                            <h3 class="card-text fs-6">${product.description}</h3>
+        <div class="card">
+            <div class="h-100 img">
+                <img class="card-img-top p-2 rounded-4" src="${product.thumbnail}">
+            </div>
+            <div class="card-body">
+                <h2 class="card-title">${product.brand}</h2>
+                <h3 class="card-text fs-6">${product.description}</h3>
 
-                            <p class="card-text fs-4 text-success">
-                                $${product.price}
-                                <span class="fs-6 text-decoration-line-through text-danger">
-                                    $${product.price + 200}
-                                </span>
-                            </p>
-
-                        ${cartProducts[product.id] ? `
-                        <div class="button">
-                            <button class="btn btn-danger pt-3 pb-3" onclick="RemoveFromCart(${product.id})">
-                        Remove From Cart</button>
-                        `: `
-                        <div class="button">
-                            <button class="btn btn-primary pt-3 pb-3" onclick="AddToCart(${product.id})">
-                            <img src="${icons.cart}" alt="Cart Icon" class="">
-                        </button> `
-            }
-
-                        ${wishlist[product.id] ?
-                `<button class="bg-light border border-primary ">
-                            <img class="heart-two w-75" onClick="RemoveFromWish(${product.id})" src="${icons.wish}" alt="Cart Icon">
+                <p class="card-text fs-4 text-success">
+                    $${product.price}
+                    <span class="fs-6 text-decoration-line-through text-danger">
+                            $${product.price + 200}
+                    </span>
+                </p>
+                    <div class="button">
+                        <button class="btn btn-primary pt-3 pb-3 ${cartProducts[product.id] ? 'btn-danger' : 'btn-primary'}" 
+                            onclick="${cartProducts[product.id] ? `RemoveFromCart(this, ${product.id})` : `AddToCart(this, ${product.id})`}">
+                                ${cartProducts[product.id] ? 'Remove From Cart' : `<img src="${icons.cart}">`}
+                        </button> 
+                        <button class="wish border border-primary border-1 bg-light border border-primary}" onclick="${wishlist[product.id] ? `RemoveFromWish(this, ${product.id})` : `favourite(this, ${product.id})`}">
+                            ${wishlist[product.id] ? `<img src="${icons.wish}">` : `<img src="${icons.fav}">`}
                         </button>
-                        `: `         
-                        <button class=" bg-light border border-primary ">
-                            <img class="heart w-75" onClick="favourite(${product.id})" src="${icons.fav}" alt="Cart Icon">
-                        </button>
-                        `}
-                        </div>
+                    
                 </div>
-                `
-    });
+        </div>`
+    })
 }
 displayProducts(products)
 
@@ -125,7 +128,14 @@ const ApiProuduct = () => {
     fetch('https://dummyjson.com/products/search?q=phone&limit=8')
         .then(res => res.json())
         .then(data => {
-            products = data.products;
+            // products = data.products;
+            products = data.products.map(product => ({
+                id: product.id,
+                brand: product.brand,
+                price: product.price,
+                description: product.description,
+                thumbnail: product.thumbnail
+            }))
             displayProducts(products)
             // spinner
             spinner.style.display = "none";
@@ -135,9 +145,6 @@ const ApiProuduct = () => {
 document.addEventListener("DOMContentLoaded", () => {
     ApiProuduct();
 })
-
-// ApiProuduct()
-
 
 const searchBtn = document.querySelector(".search-btn")
 const searchInput = document.querySelector(".search-input")
