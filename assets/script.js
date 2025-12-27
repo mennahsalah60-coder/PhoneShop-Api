@@ -6,16 +6,28 @@ const icons = {
     cart: "./assets/images/Group 1.svg",
 };
 
-const ProductsContainer = document.querySelector(".products");
+const productsContainer = document.querySelector(".products");
 const wishlist = JSON.parse(localStorage.getItem("wishs")) || {};
 const counter = document.querySelector(".counter")
 const countofwish = document.querySelector(".wishs")
 const btnWishs = document.querySelector(".wishs")
 
+const cartProducts = JSON.parse(localStorage.getItem("cart")) || {}
+
+const searchBtn = document.querySelector(".search-btn")
+const searchInput = document.querySelector(".search-input")
+
+const priceBtn = document.querySelector(".price-btn")
+const maxPrice = document.querySelector(".max-price")
+const minPrice = document.querySelector(".min-price")
+
+const hour = document.querySelector(".hour")
+const minute = document.querySelector(".minute")
+const secounde = document.querySelector(".secound")
+
+
 const updataCounters = () => {
     const cart = JSON.parse(localStorage.getItem("cart")) || {};
-    const wishlist = JSON.parse(localStorage.getItem("wishs")) || {};
-
     if (counter) {
         counter.textContent = Object.keys(cart).length;
     }
@@ -30,7 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // add to cart
-const cartProducts = JSON.parse(localStorage.getItem("cart")) || {}
 const AddToCart = (btn, id) => {
     cartProducts[id] = true
     localStorage.setItem("cart", JSON.stringify(cartProducts))
@@ -71,7 +82,7 @@ const favourite = (btn, id) => {
 btnWishs.addEventListener("click", function () {
     const filteredWishlist = products.filter(product => wishlist[product.id]);
     if (filteredWishlist.length === 0) {
-        ProductsContainer.innerHTML = `
+        productsContainer.innerHTML = `
             <p class="text-center fs-3 text-secondary">No Favorites Found</p>
         `;
         return;
@@ -90,9 +101,9 @@ const RemoveFromWish = (btn, id) => {
 }
 
 const displayProducts = (products) => {
-    ProductsContainer.innerHTML = " "
+    productsContainer.innerHTML = " "
     products.forEach(product => {
-        ProductsContainer.innerHTML += `
+        productsContainer.innerHTML += `
         <div class="card">
             <div class="h-100 img">
                 <img class="card-img-top p-2 rounded-4" src="${product.thumbnail}">
@@ -123,10 +134,9 @@ const displayProducts = (products) => {
 displayProducts(products)
 
 
-const spinner = document.querySelector(".loader")
-
-const ApiProuduct = () => {
-    spinner.style.display = "flex";  // block*
+const getProductsFromAPI = () => {
+    const spinner = document.querySelector(".loader")
+    // spinner.style.display = "flex";  // block*
     fetch('https://dummyjson.com/products/search?q=phone&limit=8')
         .then(res => res.json())
         .then(data => {
@@ -138,27 +148,23 @@ const ApiProuduct = () => {
                 description: product.description,
                 thumbnail: product.thumbnail
             }))
-            displayProducts(products)
+
             // spinner
-            spinner.style.display = "none";
+            spinner.classList.remove("loader")
+            displayProducts(products)
         })
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    ApiProuduct();
+    getProductsFromAPI();
 })
-
-const searchBtn = document.querySelector(".search-btn")
-const searchInput = document.querySelector(".search-input")
 
 searchBtn.addEventListener("click", function () {
     // preventDefault() --> form ?
     // event.preventDefault()
-    ProductsContainer.innerHTML = "";
-
     const input = searchInput.value.toLowerCase().trim();
     if (input === "" || input === " ") {
-        ProductsContainer.innerHTML =
+        productsContainer.innerHTML =
             `<p class=" fs-4 w-100 text-danger">Please enter a search value !</p>`;
         return;
     }
@@ -168,31 +174,26 @@ searchBtn.addEventListener("click", function () {
     });
 
     if (filteredNamePtoducts.length === 0) {
-        ProductsContainer.innerHTML =
+        productsContainer.innerHTML =
             `<p class="text-center fs-2 text-secondary">No Data Found</p>`;
         return;
     }
     displayProducts(filteredNamePtoducts);
 });
 
-
-const priceBtn = document.querySelector(".price-btn")
-const maxPrice = document.querySelector(".max-price")
-const minPrice = document.querySelector(".min-price")
-
 priceBtn.addEventListener("click", function () {
-    ProductsContainer.innerHTML = "";
+    productsContainer.innerHTML = "";
     const max = Number(maxPrice.value)
     const min = Number(minPrice.value)
 
     if (min < 0 || max < 0) {
-        ProductsContainer.innerHTML = `
+        productsContainer.innerHTML = `
         <p class="text-center fs-4 text-danger">
             Please enter positive numbers only
         </p>`;
         return;
     } else if (minPrice.value.trim() === "" || maxPrice.value.trim() === "") {
-        ProductsContainer.innerHTML = `
+        productsContainer.innerHTML = `
         <p class="text-center fs-4 text-danger">
             Please enter both minimum and maximum prices
         </p>`;
@@ -204,16 +205,12 @@ priceBtn.addEventListener("click", function () {
         return price >= min && price <= max
     })
     if (filteredPrice.length === 0) {
-        ProductsContainer.innerHTML =
+        productsContainer.innerHTML =
             `<p class="text-center fs-2 text-secondary"> No Data Found </p> `;
         return;
     }
     displayProducts(filteredPrice)
 })
-
-const hour = document.querySelector(".hour")
-const minute = document.querySelector(".minute")
-const secounde = document.querySelector(".secound")
 
 let countdown = (7 * 60 * 60) + (23 * 60) + 46
 setInterval(() => {
