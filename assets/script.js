@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
     updataCounters();
 });
 
-
+// add to cart
 const cartProducts = JSON.parse(localStorage.getItem("cart")) || {}
 const AddToCart = (btn, id) => {
     cartProducts[id] = true
@@ -55,6 +55,8 @@ const RemoveFromCart = (btn, id) => {
     updataCounters()
 }
 
+
+// wish list
 const favourite = (btn, id) => {
     wishlist[id] = true
     localStorage.setItem("wishs", JSON.stringify(wishlist))
