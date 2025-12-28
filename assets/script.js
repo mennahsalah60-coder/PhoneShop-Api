@@ -115,7 +115,7 @@ const displayProducts = (products) => {
                 <p class="card-text fs-4 text-success">
                     $${product.price}
                     <span class="fs-6 text-decoration-line-through text-danger">
-                            $${product.price + 200}
+                            $${product.price_after_sale.toFixed(2)}
                     </span>
                 </p>
                     <div class="button">
@@ -136,15 +136,15 @@ displayProducts(products)
 
 const getProductsFromAPI = () => {
     const spinner = document.querySelector(".loader")
-    // spinner.style.display = "flex";  // block*
     fetch('https://dummyjson.com/products/search?q=phone&limit=8')
         .then(res => res.json())
         .then(data => {
             // products = data.products;
             products = data.products.map(product => ({
                 id: product.id,
-                brand: product.brand,
+                brand: product.title,
                 price: product.price,
+                price_after_sale: product.price * (100 - 20) / 100,
                 description: product.description,
                 thumbnail: product.thumbnail
             }))
