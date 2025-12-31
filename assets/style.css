@@ -100,6 +100,10 @@ section {
         margin-top: 40px;
 
         button {
+            border-radius: 0px 0px 0px 10px;
+        }
+
+        .wish {
             border-radius: 0px 0px 10px 0px;
         }
 
