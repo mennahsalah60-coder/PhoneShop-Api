@@ -136,7 +136,7 @@ displayProducts(products)
 
 const getProductsFromAPI = () => {
     const spinner = document.querySelector(".loader")
-    fetch('https://dummyjson.com/products/search?q=phone&limit=8')
+    fetch('https://dummyjson.com/products/search?q=smartphone&limit=8')
         .then(res => res.json())
         .then(data => {
             // products = data.products;
@@ -144,7 +144,7 @@ const getProductsFromAPI = () => {
                 id: product.id,
                 brand: product.title,
                 price: product.price,
-                price_after_sale: product.price * (100 - 20) / 100,
+                price_after_sale: product.price * (100 - (product.discountPercentage)) / 100,
                 description: product.description,
                 thumbnail: product.thumbnail
             }))
